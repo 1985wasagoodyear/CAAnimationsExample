@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  AnimationsViewController.h
 //  AnimationTableTest
 //
 //  Created by Kevin Yu on 1/1/19.
@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
+@interface AnimationsViewController : UIViewController
 
 
 @end
