@@ -45,7 +45,8 @@ static NSInteger imageSize = 214;
                               @"Spin",
                               @"Wave",
                               @"Blink and Spin",
-                              @"Spin and Wave"];
+                              @"Spin and Wave",
+                              @"Blink, Spin, and Wave"];
     
     [self.tableView registerClass:[UITableViewCell class]
            forCellReuseIdentifier:reuseIdentifier];
@@ -165,8 +166,11 @@ static NSInteger imageSize = 214;
             case 3:
                 [strongSelf blinkAndSpinAnimation];
                 break;
-            default:
+            case 4:
                 [strongSelf spinAndWaveAnimation];
+                break;
+            default:
+                [strongSelf blinkSpinWaveAnimation];
                 break;
         }
     };
@@ -186,6 +190,7 @@ static NSInteger imageSize = 214;
 }
 - (void)spinAnimation {
     CABasicAnimation *spin = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
+    
     spin.fromValue = @0.0;
     spin.toValue = @(M_PI * 2.0);
     spin.duration = 1.0;
@@ -195,8 +200,8 @@ static NSInteger imageSize = 214;
 - (void)waveAnimation {
     CGFloat duration = 3.0;
     CGFloat width = self.view.frame.size.width;
-    CAAnimationGroup *group = [CAAnimationGroup new];
     
+    CAAnimationGroup *group = [CAAnimationGroup new];
     group.duration = duration;
     
     CABasicAnimation *xAnimation = [CABasicAnimation animationWithKeyPath:@"transform.translation.x"];
@@ -214,6 +219,7 @@ static NSInteger imageSize = 214;
 }
 - (void)blinkAndSpinAnimation {
     CGFloat duration = 1.5;
+    
     CAAnimationGroup *group = [CAAnimationGroup new];
     group.duration = duration;
     
@@ -232,8 +238,34 @@ static NSInteger imageSize = 214;
 - (void)spinAndWaveAnimation {
     CGFloat duration = 3.0;
     CGFloat width = self.view.frame.size.width;
-    CAAnimationGroup *group = [CAAnimationGroup new];
     
+    CAAnimationGroup *group = [CAAnimationGroup new];
+    group.duration = duration;
+    
+    CABasicAnimation *xAnimation = [CABasicAnimation animationWithKeyPath:@"transform.translation.x"];
+    xAnimation.fromValue = @(-width);
+    xAnimation.toValue = @(width);
+    xAnimation.duration = duration;
+    
+    CAKeyframeAnimation *yAnimation = [CAKeyframeAnimation animationWithKeyPath:@"transform.translation.y"];
+    yAnimation.values = @[@0.0, @100.0, @-100.0, @100.0, @-100.0, @0.0];
+    yAnimation.duration = duration;
+    
+    CABasicAnimation *spin = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
+    spin.fromValue = @0.0;
+    spin.toValue = @(M_PI * 2.0);
+    spin.duration = duration;
+    
+    group.animations = @[xAnimation, yAnimation, spin];
+    
+    [self.imageView.layer addAnimation:group forKey:@"spinAndWaveAnimation"];
+}
+
+- (void)blinkSpinWaveAnimation {
+    CGFloat duration = 3.0;
+    CGFloat width = self.view.frame.size.width;
+    
+    CAAnimationGroup *group = [CAAnimationGroup new];
     group.duration = duration;
     
     CABasicAnimation *xAnimation = [CABasicAnimation animationWithKeyPath:@"transform.translation.x"];
@@ -249,9 +281,15 @@ static NSInteger imageSize = 214;
     blink.values = @[@1.0, @0.0, @1.0, @0.0, @1.0];
     blink.duration = duration;
     
-    group.animations = @[xAnimation, yAnimation, blink];
+    CABasicAnimation *spin = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
+    spin.fromValue = @0.0;
+    spin.toValue = @(M_PI * 2.0);
+    spin.duration = duration;
+    group.animations = @[blink, spin];
     
-    [self.imageView.layer addAnimation:group forKey:@"spinAndWaveAnimation"];
+    group.animations = @[xAnimation, yAnimation, blink, spin];
+    
+    [self.imageView.layer addAnimation:group forKey:@"blinkSpinWaveAnimation"];
 }
 
 @end
